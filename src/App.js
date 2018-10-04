@@ -1,73 +1,81 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import AddTodo from './components/addTodo/';
-import TodoList from './components/todoList';
+import ArticleList from './components/articleList';
+import Header from './components/header';
+import SearchArticle from './components/searchArticle';
 import actions from './actions/';
 import './App.css';
 
-export const App = ({
-    submitTodo,
-    todos,
-    deleteTodo,
-    undeleteTodo,
-    inputChanged,
-    disableAddTodo,
-    disableUndelete,
-  }) => (
-    <div>
-      <h1>Todo list</h1>
+class App extends React.Component {
+  render() {
+    return <div className="hero">
+            <div className="container">
+              <Header />
+              <SearchArticle
+                searchArticle={this.props.searchArticle}
+              />
+              <ArticleList
+                articles={this.props.articles}
+                loading={this.props.loading}
+                toggleDetail={this.props.toggleDetail}
+              />
 
-      <AddTodo
-        submitTodo={submitTodo}
-        undeleteTodo={undeleteTodo}
-        inputChanged={inputChanged}
-        disableAddTodo={disableAddTodo}
-        disableUndelete={disableUndelete}
-      />
+            </div>
+          </div>
+  }
+  componentDidMount(){
+    this.props.searchArticle("capgemini");
+  }
+}
 
-      <TodoList
-        todos={todos}
-        deleteTodo={deleteTodo}
-      />
-    </div>
-);
+
+// export const App = ({
+//   searchArticle,
+//   toggleDetail,
+//   articles,
+//   loading,
+// }) => (
+//   <div className="hero">
+//     <div className="container">
+//       <Header />
+//       <SearchArticle
+//         searchArticle={searchArticle}
+//       />
+//       <ArticleList
+//         articles={articles}
+//         loading={loading}
+//         toggleDetail={toggleDetail}
+//         searchArticle={searchArticle}
+//       />
+
+//     </div>
+//   </div>
+// );
 
 App.propTypes = {
-  submitTodo: PropTypes.func.isRequired,
-  todos: PropTypes.arrayOf(PropTypes.shape(
-    {
-      id: PropTypes.number.isRequired,
-      text: PropTypes.string.isRequired,
-    },
-  )).isRequired,
-  deleteTodo: PropTypes.func.isRequired,
-  undeleteTodo: PropTypes.func.isRequired,
-  inputChanged: PropTypes.func.isRequired,
-  disableAddTodo: PropTypes.bool.isRequired,
-  disableUndelete: PropTypes.bool.isRequired,
+  searchArticle: PropTypes.func.isRequired,
+  toggleDetail: PropTypes.func.isRequired,
+  articles: PropTypes.array.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = state => state.todoListApp;
+
+const mapStateToProps = state => ({
+  articles: state.articles.articles,
+  loading: state.articles.loading,
+});
 
 const mapDispatchToProps = dispatch => ({
-  submitTodo: (text) => {
-    if (text) {
-      dispatch(actions.submitTodo(text));
+  searchArticle: (keyword) => {
+    if (keyword) {
+      dispatch(actions.searchArticle(keyword));
     }
   },
-
-  deleteTodo: (id) => {
-    dispatch(actions.deleteTodo(id));
+  toggleDetail: (id) => {
+    dispatch(actions.toggleDetail(id));
   },
 
-  undeleteTodo: () => {
-    dispatch(actions.undeleteTodo());
-  },
-
-  inputChanged: (text) => {
-    dispatch(actions.inputChanged(text));
-  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

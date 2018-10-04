@@ -1,40 +1,41 @@
 import types from '../constants/';
-
-let todoId = 0;
-
-const nextId = () => {
-  todoId += 1;
-  return todoId;
-};
+import axios from 'axios';
 
 const actions = {
-  submitTodo(text) {
-    return {
-      type: types.SUBMIT_TODO,
-      id: nextId(),
-      text,
-    };
+
+  searchArticle(keyword){
+    return (dispatch) => {
+      dispatch({
+        type: types.ARTICLES_LOADING,
+        loading: true
+      });
+      axios.get(`http://api.nytimes.com/svc/search/v2/articlesearch.json?q=${keyword}&api-key=7cce6fdf84be47c38cecf17bdcf1bd85`)
+      .then(function (response) {
+        // handle success
+        const articles = response.data.response.docs;
+        dispatch(
+          {
+            type: types.REPLACE_ARTICLES,
+            articles
+          }
+        );
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+    }
   },
 
-  deleteTodo(id) {
+  toggleDetail(id) {
     return {
-      type: types.DELETE_TODO,
+      type: types.TOGGLE_DETAIL,
       id,
     };
-  },
-
-  undeleteTodo() {
-    return {
-      type: types.UNDELETE_TODO,
-    };
-  },
-
-  inputChanged(inputText) {
-    return {
-      type: types.INPUT_CHANGED,
-      inputText,
-    };
-  },
+  }
 };
 
 export default actions;
