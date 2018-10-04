@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect;
 
-describe('TodoList App', () => {
+describe('App', () => {
   const todoText = 'Get better at testing';
 
   beforeEach(() => {
